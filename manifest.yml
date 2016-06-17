@@ -1,0 +1,4 @@
+---
+applications:
+- name: aqualove-api
+  memory: 128M

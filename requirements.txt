@@ -1,1 +1,6 @@
 Flask
+Flask-RESTful
+cloudant
+marshmallow
+# Soft dep of marshmallow : http://marshmallow.readthedocs.io/en/latest/install.html
+python-dateutil

@@ -1,13 +1,11 @@
-import os
-import json
+from flask import request
+from flask_restful import Api, Resource, abort
 
-from flask import Flask, g, current_app, request
-from flask_restful import Resource, Api, abort
-
-from cloudant.client import Cloudant
 from cloudant.document import Document
 
 from marshmallow import Schema, fields
+
+from .db import get_db
 
 
 class ScrapSchema(Schema):
@@ -18,27 +16,6 @@ class ScrapSchema(Schema):
     content_type = fields.Str(required=True)
 
 scrap_schema = ScrapSchema()
-
-
-def make_store_connection():
-    services = current_app.config['cf_services']
-    creds = services['cloudantNoSQLDB'][0]['credentials']
-    client = Cloudant(creds['username'], creds['password'], url=creds['url'])
-    client.connect()
-    return client
-
-
-def get_store():
-    store = getattr(g, '_store', None)
-    if store is None:
-        store = g._store = make_store_connection()
-    return store
-
-
-def get_scraps_db():
-    store = get_store()
-    scraps_db = store['scraps']
-    return scraps_db
 
 
 class Root(Resource):
@@ -57,6 +34,10 @@ def load_body(schema):
     if errors:
         abort(400, message='missing_arguments: %s' % errors)
     return data
+
+
+def get_scraps_db():
+    return get_db()['scraps']
 
 
 class ScrapCollection(Resource):
@@ -82,25 +63,8 @@ class ScrapCollection(Resource):
         return doc
 
 
-def set_cloudfoundry_config(app):
-    services_env = os.getenv('VCAP_SERVICES')
-    assert services_env, 'Missing VCAP_SERVICES environment variable'
-    services = json.loads(services_env)
-    app.config['cf_services'] = services
-
-
-def run(host='0.0.0.0', port=8080):
-    app = Flask(__name__)
-    set_cloudfoundry_config(app)
+def init_app(app):
     api = Api(app)
     api.add_resource(Root, '/')
     api.add_resource(ScrapCollection, '/scraps')
     # api.add_resource(ScrapItem, '/scraps/<scrapid>')
-    app.run(host=host, port=port)
-
-
-if __name__ == '__main__':
-    # On Bluemix, get the port number from the environment variable VCAP_APP_PORT
-    # When running this app on the local machine, default the port to 8080
-    port = int(os.getenv('VCAP_APP_PORT', 8080))
-    run(port=port)

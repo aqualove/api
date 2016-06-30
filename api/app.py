@@ -16,7 +16,7 @@ def set_cloudfoundry_config(app):
 
 app = Flask(__name__)
 
-DEBUG = True
+DEBUG = bool(os.getenv('DEBUG'))
 app.config.from_object(__name__)
 
 set_cloudfoundry_config(app)

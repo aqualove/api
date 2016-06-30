@@ -336,7 +336,7 @@ a.pure-button-primary {
 
     var mymap = L.map('mapid');
 
-    var montrealCoordinate = [45.5521, -73.6575];
+    var montrealCoordinate = [45.5521, -73.73];
     mymap.setView(montrealCoordinate, 11);
 
     // Default public token from Pior account
@@ -352,8 +352,7 @@ a.pure-button-primary {
     }).addTo(mymap);
 
     L.marker([45.5, -73.541944]).addTo(mymap)
-      .bindPopup("<b>Standing wave of Habitat 67</b><br />https://en.wikipedia.org/wiki/Habitat_67_(standing_wave)")
-      .openPopup();
+      .bindPopup("<b>Standing wave of Habitat 67</b><br />https://en.wikipedia.org/wiki/Habitat_67_(standing_wave)");
 
     // L.marker([51.5, -0.09]).addTo(mymap)
     //   .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
@@ -380,6 +379,26 @@ a.pure-button-primary {
     // }
 
     // mymap.on('click', onMapClick);
+
+
+    function setRiverBank(data) {
+      console.log("Got a riverbank", data);
+      L.geoJson(data).addTo(mymap);
+    }
+
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open('GET', '/static/montreal-riverbank.geojson', true);
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4) {
+            if(xmlhttp.status == 200) {
+                var obj = JSON.parse(xmlhttp.responseText);
+                setRiverBank(obj);
+             }
+        }
+    };
+    xmlhttp.send(null);
+
+
 
   </script>
 

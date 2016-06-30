@@ -65,6 +65,6 @@ class ScrapCollection(Resource):
 
 def init_app(app):
     api = Api(app)
-    api.add_resource(Root, '/')
-    api.add_resource(ScrapCollection, '/scraps')
-    # api.add_resource(ScrapItem, '/scraps/<scrapid>')
+    api.add_resource(Root, '/api')
+    api.add_resource(ScrapCollection, '/api/scraps')
+    # api.add_resource(ScrapItem, '/api/scraps/<scrapid>')

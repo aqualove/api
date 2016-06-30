@@ -4,6 +4,7 @@ import json
 from flask import Flask
 
 from . import resources
+from . import site
 
 
 def set_cloudfoundry_config(app):
@@ -14,5 +15,10 @@ def set_cloudfoundry_config(app):
 
 
 app = Flask(__name__)
+
+DEBUG = True
+app.config.from_object(__name__)
+
 set_cloudfoundry_config(app)
 resources.init_app(app)
+site.init_app(app)
